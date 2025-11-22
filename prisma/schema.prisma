@@ -1,0 +1,130 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  password      String
+  role          Role      @default(LAWYER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  cases         Case[]
+  hearings      Hearing[]
+  clients       Client[]
+  documents     Document[]
+  notes         Note[]
+}
+
+enum Role {
+  ADMIN
+  LAWYER
+  PARALEGAL
+}
+
+model Client {
+  id            String    @id @default(cuid())
+  name          String
+  email         String?
+  phone         String?
+  address       String?
+  cnic          String?   @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  cases         Case[]
+  documents     Document[]
+  assignedTo    User      @relation(fields: [userId], references: [id])
+  userId        String
+}
+
+model Case {
+  id            String    @id @default(cuid())
+  title         String
+  description   String?
+  caseNumber    String?   @unique
+  court         String?
+  caseType      String?
+  judge         String?
+  fillingDate   DateTime?
+  status        CaseStatus @default(ACTIVE)
+  counselFor    String?   // Who the lawyer is representing
+  opposingParty String?   // Opposing party in the case
+  policeStation String?   // Only for criminal cases
+  fir           String?   // FIR number for criminal cases
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  clients       Client[]
+  hearings      Hearing[]
+  documents     Document[]
+  lawyer        User      @relation(fields: [userId], references: [id])
+  userId        String
+  notes         Note[]
+}
+
+enum CaseStatus {
+  ACTIVE
+  PENDING
+  CLOSED
+  WON
+  LOST
+  SETTLED
+}
+
+model Hearing {
+  id            String    @id @default(cuid())
+  title         String
+  date          DateTime
+  location      String?
+  notes         String?
+  outcome       String?
+  status        HearingStatus @default(SCHEDULED)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  case          Case      @relation(fields: [caseId], references: [id])
+  caseId        String
+  assignedTo    User      @relation(fields: [userId], references: [id])
+  userId        String
+}
+
+enum HearingStatus {
+  SCHEDULED
+  COMPLETED
+  POSTPONED
+  CANCELLED
+}
+
+model Document {
+  id            String    @id @default(cuid())
+  title         String
+  description   String?
+  fileUrl       String
+  fileType      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  case          Case?     @relation(fields: [caseId], references: [id])
+  caseId        String?
+  client        Client?   @relation(fields: [clientId], references: [id])
+  clientId      String?
+  uploadedBy    User      @relation(fields: [userId], references: [id])
+  userId        String
+}
+
+model Note {
+  id            String    @id @default(cuid())
+  content       String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  case          Case      @relation(fields: [caseId], references: [id])
+  caseId        String
+  createdBy     User      @relation(fields: [userId], references: [id])
+  userId        String
+} 
