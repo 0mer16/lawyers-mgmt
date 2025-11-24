@@ -26,7 +26,7 @@
 - [ ] Create Web Service on Render
   - Click: New + → Web Service
   - Connect GitHub repo: `0mer16/lawyers-mgmt`
-  - Set Build Command: `npm ci --ignore-scripts && npm run postinstall && npm run build`
+  - Set Build Command: `npm ci && npm run build`
   - Set Start Command: `npm start`
 
 ### 3. Environment Variables
