@@ -32,7 +32,7 @@
 - **Runtime**: Node
 - **Build Command**: 
   ```
-  npm install && npx prisma generate && npm run build
+  npm install --legacy-peer-deps && npx prisma generate && npm run build
   ```
 - **Start Command**: 
   ```
