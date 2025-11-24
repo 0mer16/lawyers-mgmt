@@ -19,7 +19,7 @@
 
 **Build Command** (copy-paste):
 ```bash
-npm install --legacy-peer-deps && npm run build
+npm ci && npm run build
 ```
 
 **Start Command** (copy-paste):

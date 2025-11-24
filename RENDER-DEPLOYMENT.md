@@ -32,7 +32,7 @@
 - **Runtime**: Node
 - **Build Command**: 
   ```
-  npm install --legacy-peer-deps && npm run build
+  npm ci && npm run build
   ```
 - **Start Command**: 
   ```
