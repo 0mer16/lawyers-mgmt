@@ -1,27 +1,8 @@
-// This file is no longer used
-// We've moved the auth configuration to app/api/auth/[...nextauth]/route.ts 
-
+// Server-side authentication utilities
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
-
-// Function to parse our JWT-like token
-function parseToken(token: string) {
-  try {
-    const parts = token.split('.')
-    if (parts.length !== 3) {
-      console.error('Invalid token format, missing parts')
-      return null
-    }
-    
-    const payload = parts[1]
-    const data = JSON.parse(Buffer.from(payload, 'base64').toString('utf-8'))
-    return data
-  } catch (error) {
-    console.error('Failed to parse token:', error)
-    return null
-  }
-}
+import { verifyToken } from '@/lib/jwt'
 
 // Server-side auth check - returns session if logged in, null otherwise
 export async function auth() {
@@ -34,17 +15,17 @@ export async function auth() {
   }
 
   try {
-    // Parse and validate token
-    const decoded = parseToken(token)
+    // Verify and decode JWT token
+    const decoded = await verifyToken(token)
     
-    if (!decoded || typeof decoded !== 'object' || !('id' in decoded)) {
+    if (!decoded || !decoded.id) {
       console.error('Invalid token format:', decoded)
       return null
     }
     
     // Fetch user from database to confirm they exist
     const user = await prisma.user.findUnique({
-      where: { id: decoded.id as string },
+      where: { id: decoded.id },
       select: {
         id: true,
         name: true,

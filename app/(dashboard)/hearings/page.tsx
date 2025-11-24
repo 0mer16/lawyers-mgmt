@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
-import { useAuth } from '@/components/auth-provider'
+import { useAuth } from '@/hooks/use-auth-guard'
 import { toast } from 'sonner'
 
 interface Hearing {

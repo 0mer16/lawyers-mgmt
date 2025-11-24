@@ -23,7 +23,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { DashboardNav } from '@/components/dashboard-nav'
 import { toast } from 'sonner'
-import { useAuth } from '@/components/auth-provider'
+import { useAuth } from '@/hooks/use-auth-guard'
 
 interface DashboardLayoutProps {
   children: React.ReactNode

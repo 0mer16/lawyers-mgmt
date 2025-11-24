@@ -23,6 +23,8 @@ model User {
   clients       Client[]
   documents     Document[]
   notes         Note[]
+  
+  @@index([email])
 }
 
 enum Role {
@@ -42,8 +44,12 @@ model Client {
   updatedAt     DateTime  @updatedAt
   cases         Case[]
   documents     Document[]
-  assignedTo    User      @relation(fields: [userId], references: [id])
+  assignedTo    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        String
+  
+  @@index([userId])
+  @@index([cnic])
+  @@index([name])
 }
 
 model Case {
@@ -65,9 +71,14 @@ model Case {
   clients       Client[]
   hearings      Hearing[]
   documents     Document[]
-  lawyer        User      @relation(fields: [userId], references: [id])
+  lawyer        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        String
   notes         Note[]
+  
+  @@index([userId])
+  @@index([status])
+  @@index([caseNumber])
+  @@index([createdAt])
 }
 
 enum CaseStatus {
@@ -89,10 +100,15 @@ model Hearing {
   status        HearingStatus @default(SCHEDULED)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  case          Case      @relation(fields: [caseId], references: [id])
+  case          Case      @relation(fields: [caseId], references: [id], onDelete: Cascade)
   caseId        String
-  assignedTo    User      @relation(fields: [userId], references: [id])
+  assignedTo    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        String
+  
+  @@index([caseId])
+  @@index([userId])
+  @@index([date])
+  @@index([status])
 }
 
 enum HearingStatus {
@@ -110,12 +126,16 @@ model Document {
   fileType      String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  case          Case?     @relation(fields: [caseId], references: [id])
+  case          Case?     @relation(fields: [caseId], references: [id], onDelete: Cascade)
   caseId        String?
-  client        Client?   @relation(fields: [clientId], references: [id])
+  client        Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   clientId      String?
-  uploadedBy    User      @relation(fields: [userId], references: [id])
+  uploadedBy    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        String
+  
+  @@index([caseId])
+  @@index([clientId])
+  @@index([userId])
 }
 
 model Note {
@@ -123,8 +143,11 @@ model Note {
   content       String
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  case          Case      @relation(fields: [caseId], references: [id])
+  case          Case      @relation(fields: [caseId], references: [id], onDelete: Cascade)
   caseId        String
-  createdBy     User      @relation(fields: [userId], references: [id])
+  createdBy     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        String
+  
+  @@index([caseId])
+  @@index([userId])
 } 

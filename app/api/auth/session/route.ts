@@ -1,30 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-// Function to parse our JWT-like token
-function parseToken(token: string): any {
-  try {
-    // Extract the payload (second part of the token)
-    const parts = token.split('.')
-    if (parts.length !== 3) {
-      console.error('Invalid token format')
-      return null
-    }
-    
-    const payload = parts[1]
-    const data = JSON.parse(Buffer.from(payload, 'base64').toString())
-    
-    // Check if token is expired
-    if (data.exp && data.exp < Date.now()) {
-      console.error('Token expired')
-      return null
-    }
-    
-    return data
-  } catch (error) {
-    console.error('Error parsing token:', error)
-    return null
-  }
-}
+import { verifyToken } from '@/lib/jwt'
 
 export async function GET(request: NextRequest) {
   try {
@@ -35,8 +10,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ user: null })
     }
     
-    // Parse and validate token
-    const userData = parseToken(token)
+    // Verify JWT token
+    const userData = await verifyToken(token)
     
     if (!userData) {
       // Token is invalid or expired

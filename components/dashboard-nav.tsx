@@ -19,7 +19,7 @@ export function DashboardNav() {
   const navItems: NavItem[] = [
     {
       title: 'Dashboard',
-      href: '/',
+      href: '/dashboard',
       icon: <BarChart2 className="h-5 w-5" />,
     },
     {

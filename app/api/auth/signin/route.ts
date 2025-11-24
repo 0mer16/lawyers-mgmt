@@ -1,24 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { compare } from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
-
-// Create a JWT-like token structure (header.payload.signature)
-function createSimpleToken(data: any): string {
-  // Create a simple header
-  const header = Buffer.from(JSON.stringify({
-    alg: "none",
-    typ: "JWT"
-  })).toString('base64')
-  
-  // Create the payload
-  const payload = Buffer.from(JSON.stringify(data)).toString('base64')
-  
-  // Create a simple signature (just for format, not actual security)
-  const signature = Buffer.from("signature").toString('base64')
-  
-  // Combine in JWT format
-  return `${header}.${payload}.${signature}`
-}
+import { createToken } from '@/lib/jwt'
 
 export async function POST(request: NextRequest) {
   try {
@@ -54,13 +37,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create a simple auth token
-    const token = createSimpleToken({
+    // Create JWT token
+    const token = await createToken({
       id: user.id,
       email: user.email,
       name: user.name,
-      role: user.role,
-      exp: Date.now() + 1000 * 60 * 60 * 24 * 7 // 7 days from now
+      role: user.role
     })
 
     // Create response
@@ -70,13 +52,15 @@ export async function POST(request: NextRequest) {
         email: user.email,
         name: user.name,
         role: user.role
-      }
+      },
+      success: true
     })
 
-    // Set the cookie in the response
+    // Set the cookie in the response with proper security settings
     response.cookies.set('auth-token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7, // 1 week
       path: '/'
     })

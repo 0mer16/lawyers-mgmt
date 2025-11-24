@@ -1,35 +1,25 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { verifyToken } from '@/lib/jwt'
 
-// Validate our token function (simplified)
-function isValidToken(token: string): boolean {
+// Validate our token function
+async function isValidToken(token: string): Promise<boolean> {
   try {
-    // The token is already in base64 format, but the payload is in the format: header.payload.signature
-    // We need to extract the payload (index 1) and then decode it
-    const parts = token.split('.')
-    if (parts.length !== 3) {
-      console.error('Invalid token format:', token)
+    const decoded = await verifyToken(token)
+    if (!decoded) {
+      console.error('[Middleware] Token verification returned null')
       return false
     }
-    
-    const payload = parts[1]
-    const decoded = JSON.parse(Buffer.from(payload, 'base64').toString())
-    
-    // Check if token has required fields
-    if (!decoded || !decoded.id) {
-      console.error('Missing required fields in token')
-      return false
-    }
-    
+    console.log('[Middleware] Token verified successfully for user:', decoded.email)
     return true
   } catch (error) {
-    console.error('Error validating token:', error)
+    console.error('[Middleware] Error validating token:', error)
     return false
   }
 }
 
 // Simplified middleware that only protects specific paths
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   // Get the path
   const path = request.nextUrl.pathname
   
@@ -37,25 +27,38 @@ export function middleware(request: NextRequest) {
   if (path.startsWith('/api/auth') || 
       path.startsWith('/_next') || 
       path.includes('favicon.ico') ||
-      path === '/signin') {
+      path.startsWith('/public') ||
+      path === '/signin' ||
+      path === '/signup') {
     return NextResponse.next()
   }
   
   // Check for our auth token
   const authToken = request.cookies.get('auth-token')?.value
   
-  // Debug auth token
-  console.log(`Path: ${path}, Token exists: ${!!authToken}`)
+  console.log(`[Middleware] Path: ${path}, Token exists: ${!!authToken}`)
   
-  const isAuthenticated = authToken && isValidToken(authToken)
+  if (!authToken) {
+    console.log('[Middleware] No token found, redirecting to signin')
+    if (path !== '/' && !path.startsWith('/signin') && !path.startsWith('/signup')) {
+      return NextResponse.redirect(new URL('/signin', request.url))
+    }
+    return NextResponse.next()
+  }
   
-  // Debug authentication result
-  console.log(`Path: ${path}, Authenticated: ${isAuthenticated}`)
+  const isAuthenticated = await isValidToken(authToken)
+  console.log(`[Middleware] Path: ${path}, Authenticated: ${isAuthenticated}`)
   
-  // If not authenticated and not visiting the home page, redirect to signin
-  if (!isAuthenticated && path !== '/') {
-    console.log(`Redirecting to signin from: ${path}`)
+  // If not authenticated and trying to access protected routes
+  if (!isAuthenticated && path !== '/' && !path.startsWith('/signin') && !path.startsWith('/signup')) {
+    console.log('[Middleware] Invalid token, redirecting to signin')
     return NextResponse.redirect(new URL('/signin', request.url))
+  }
+  
+  // If authenticated and trying to access auth pages, redirect to dashboard
+  if (isAuthenticated && (path === '/signin' || path === '/signup')) {
+    console.log('[Middleware] Already authenticated, redirecting to dashboard')
+    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
   
   return NextResponse.next()

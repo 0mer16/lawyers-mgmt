@@ -283,16 +283,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
     
-    // First delete related hearings and documents to avoid foreign key constraints
-    await prisma.hearing.deleteMany({
-      where: { caseId: params.id }
-    })
-    
-    await prisma.document.deleteMany({
-      where: { caseId: params.id }
-    })
-    
-    // Delete the case
+    // Delete the case - cascade deletes will handle related records
     await prisma.case.delete({
       where: { id: params.id }
     })

@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { toast } from 'sonner'
-import { useAuth } from '@/components/auth-provider'
+import { useAuth } from '@/hooks/use-auth-guard'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

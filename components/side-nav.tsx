@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 
 const links = [
-  { name: 'Dashboard', href: '/', icon: FileText },
+  { name: 'Dashboard', href: '/dashboard', icon: FileText },
   { name: 'Cases', href: '/cases', icon: Briefcase },
   { name: 'Hearings', href: '/hearings', icon: Gavel },
   { name: 'Clients', href: '/clients', icon: Users },
