@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
-import { auth } from '@/auth'
+import { auth } from '@/lib/auth'
 
 // GET all users
 export async function GET(req: NextRequest) {

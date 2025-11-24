@@ -62,7 +62,7 @@ export interface Hearing {
   userId: string;
   createdAt: Date;
   updatedAt: Date;
-  case: Case;
+  case?: Case;
 }
 
 export interface Document {
