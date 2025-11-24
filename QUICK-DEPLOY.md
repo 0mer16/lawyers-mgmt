@@ -19,7 +19,7 @@
 
 **Build Command** (copy-paste):
 ```bash
-npm install --legacy-peer-deps && npx prisma generate && npm run build
+npm install --legacy-peer-deps && npm run build
 ```
 
 **Start Command** (copy-paste):
