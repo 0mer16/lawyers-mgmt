@@ -2,9 +2,6 @@
 const nextConfig = {
   transpilePackages: ['next-auth'],
   
-  // Enable standalone output for Docker
-  output: 'standalone',
-  
   // Production optimizations
   reactStrictMode: true,
   poweredByHeader: false,
@@ -57,13 +54,19 @@ const nextConfig = {
     ]
   },
   
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     // Handle next-auth module resolution properly
     config.resolve.fallback = {
       ...config.resolve.fallback,
       net: false,
       dns: false,
       tls: false,
+    };
+
+    // Ensure @ alias works correctly
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': __dirname,
     };
 
     return config;
