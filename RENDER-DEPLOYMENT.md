@@ -32,7 +32,7 @@
 - **Runtime**: Node
 - **Build Command**: 
   ```
-  npm ci && npm run build
+  npm ci --ignore-scripts && npm run postinstall && npm run build
   ```
 - **Start Command**: 
   ```
