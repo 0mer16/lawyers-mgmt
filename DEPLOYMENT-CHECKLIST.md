@@ -26,7 +26,7 @@
 - [ ] Create Web Service on Render
   - Click: New + → Web Service
   - Connect GitHub repo: `0mer16/lawyers-mgmt`
-  - Set Build Command: `npm install && npx prisma generate && npm run build`
+  - Set Build Command: `npm install --legacy-peer-deps && npx prisma generate && npm run build`
   - Set Start Command: `npm start`
 
 ### 3. Environment Variables
