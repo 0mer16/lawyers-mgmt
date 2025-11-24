@@ -22,6 +22,12 @@
 npm ci && npm run build
 ```
 
+**IMPORTANT**: If you've already created the service with an old build command:
+1. Go to Settings → Build & Deploy
+2. Update the Build Command to: `npm ci && npm run build`
+3. Click "Save Changes"
+4. Trigger a manual deploy from the dashboard
+
 **Start Command** (copy-paste):
 ```bash
 npm start
